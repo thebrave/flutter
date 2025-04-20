@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import platform
 import subprocess
 import sys
 
@@ -110,11 +111,12 @@ def main(argv):
     return 0
 
   if args.cmake:
-    cmake_path = os.path.join(SRC_ROOT, 'buildtools', 'mac-x64', 'cmake', 'bin', 'cmake')
+    platform_dir = 'mac-arm64' if platform.processor() == 'arm' else 'mac-x64'
+    cmake_path = os.path.join(SRC_ROOT, 'buildtools', platform_dir, 'cmake', 'bin', 'cmake')
     cmake_command = [
         cmake_path,
         '--preset',
-        'flutter-ci-mac-debug-x64',
+        'flutter-ci-mac-debug-%s' % ('arm64' if platform.processor() == 'arm' else 'x64'),
         '-B',
         os.path.join(SRC_ROOT, 'out', 'impeller-cmake-example'),
     ]

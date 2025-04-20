@@ -4,12 +4,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
-import subprocess
-import os
 import argparse
 import errno
+import os
+import platform
 import shutil
+import subprocess
+import sys
 
 
 def get_llvm_bin_directory():
@@ -18,7 +19,7 @@ def get_llvm_bin_directory():
   if sys.platform.startswith('linux'):
     platform_dir = 'linux-x64'
   elif sys.platform == 'darwin':
-    platform_dir = 'mac-x64'
+    platform_dir = 'mac-arm64' if platform.processor() == 'arm' else 'mac-x64'
   else:
     raise Exception('Unknown/Unsupported platform.')
   llvm_bin_dir = os.path.abspath(os.path.join(buildtool_dir, platform_dir, 'clang/bin'))

@@ -38,10 +38,12 @@ def get_out_dir(args):
   if args.android_cpu != 'arm':
     target_dir.append(args.android_cpu)
 
-  if args.mac_cpu != 'x64':
+  cur_pltf = 'arm64' if platform.processor() == 'arm' else 'x64'
+
+  if args.mac_cpu != cur_pltf:
     target_dir.append(args.mac_cpu)
 
-  if args.simulator_cpu != 'x64':
+  if args.simulator_cpu != cur_pltf:
     target_dir.append(args.simulator_cpu)
 
   if args.linux_cpu is not None:
@@ -933,7 +935,7 @@ def parse_args(args):
   )
   parser.add_argument('--ios', dest='target_os', action='store_const', const='ios')
   parser.add_argument('--mac', dest='target_os', action='store_const', const='mac')
-  parser.add_argument('--mac-cpu', type=str, choices=['x64', 'arm64'], default='x64')
+  parser.add_argument('--mac-cpu', type=str, choices=['x64', 'arm64'], default='arm64' if platform.processor() == 'arm' else 'x64')
   parser.add_argument('--simulator', action='store_true', default=False)
   parser.add_argument('--linux', dest='target_os', action='store_const', const='linux')
   parser.add_argument('--fuchsia', dest='target_os', action='store_const', const='fuchsia')
@@ -951,7 +953,7 @@ def parse_args(args):
   parser.add_argument('--linux-cpu', type=str, choices=['x64', 'x86', 'arm64', 'arm'])
   parser.add_argument('--fuchsia-cpu', type=str, choices=['x64', 'arm64'], default='x64')
   parser.add_argument('--windows-cpu', type=str, choices=['x64', 'arm64', 'x86'], default='x64')
-  parser.add_argument('--simulator-cpu', type=str, choices=['x64', 'arm64'], default='x64')
+  parser.add_argument('--simulator-cpu', type=str, choices=['x64', 'arm64'], default='arm64' if platform.processor() == 'arm' else 'x64')
   parser.add_argument('--arm-float-abi', type=str, choices=['hard', 'soft', 'softfp'])
 
   # Whether to compile in backtrace support.
@@ -1239,23 +1241,8 @@ def parse_args(args):
   return parser.parse_args(args)
 
 
-def validate_args(args):
-  valid = True
-  if args.simulator:
-    if args.mac_cpu != 'x64':
-      print(
-          'Specified a non-default mac-cpu for a simulator build. Did you mean '
-          'to use `--simulator-cpu`?'
-      )
-      valid = False
-
-  if not valid:
-    sys.exit(-1)
-
-
 def main(argv):
   args = parse_args(argv)
-  validate_args(args)
 
   if args.impeller_cmake_example:
     return run_impeller_cmake(args)

@@ -323,8 +323,13 @@ copy("copy_dylib") {
 copy("copy_asan_runtime_dylib") {
   visibility = [ ":*" ]
 
-  _libclang_base_path =
+  if (host_cpu == "arm64") {
+    _libclang_base_path =
+      "$buildtools_path/mac-arm64/clang/lib/clang/13.0.0/lib/darwin/"
+  } else {
+    _libclang_base_path =
       "$buildtools_path/mac-x64/clang/lib/clang/13.0.0/lib/darwin/"
+  }
 
   if (defined(use_ios_simulator) && use_ios_simulator) {
     _dylib_name = "libclang_rt.asan_iossim_dynamic.dylib"
