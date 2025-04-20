@@ -388,11 +388,20 @@ void main() {
     );
 
     Map<String, String> makeBuildCommandEntry(String filePath) {
-      return <String, String>{
-        'directory': '/unused',
-        'command': '../../buildtools/mac-x64/clang/bin/clang $filePath',
-        'file': filePath,
-      };
+      if (Abi.current() == Abi.macosArm64) {
+        return <String, String>{
+          'directory': '/unused',
+          'command': '../../buildtools/mac-arm64/clang/bin/clang $filePath',
+          'file': filePath,
+        };
+      } else {
+        return <String, String>{
+          'directory': '/unused',
+          'command': '../../buildtools/mac-x64/clang/bin/clang $filePath',
+          'file': filePath,
+        };
+      }
+
     }
 
     final List<String> filePaths = <String>[
@@ -609,7 +618,7 @@ void main() {
           '--cfg=flutter/engine/src/flutter/build/rbe/rewrapper-mac-arm64.cfg '
           '--exec_root=flutter/engine/src/ '
           '--labels=type=compile,compiler=clang,lang=cpp '
-          '../../buildtools/mac-x64/clang/bin/clang++ filename ',
+          '../../buildtools/mac-arm64/clang/bin/clang++ filename ',
       'file': 'unused',
     });
     expect(command.tidyArgs.trim(), 'filename');

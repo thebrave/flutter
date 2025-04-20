@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ffi';
 
 import 'package:path/path.dart' as p;
 
@@ -46,7 +47,11 @@ void main(List<String> arguments) {
   if (Platform.isLinux) {
     platform = 'linux-x64';
   } else if (Platform.isMacOS) {
-    platform = 'mac-x64';
+    if (Abi.current() == Abi.macosArm64) {
+      platform = 'mac-arm64';
+    } else {
+      platform = 'mac-x64';
+    }
   } else {
     throw UnimplementedError('Script only support running on Linux or MacOS.');
   }
